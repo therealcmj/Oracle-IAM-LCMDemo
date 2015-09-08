@@ -2,8 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "OEL6_6"
-
+  config.vm.box = "OEL6_7"
 
   config.vm.hostname = "lcmdemo.oracleateam.com"
   config.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777","fmode=777"]
