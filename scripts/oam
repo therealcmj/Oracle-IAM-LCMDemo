@@ -1,0 +1,62 @@
+#!/home/oracle/Oracle/Middleware/Oracle_IAM1/common/bin/wlst.sh
+
+import sys
+
+username = 'weblogic'
+password = 'Welcome01'
+hostname = os.environ["HOSTNAME"]
+
+
+servers = [ 'AdminServer', 'oam_server1' ]
+
+
+status = ''
+
+for server in servers:
+    print "Server:", server
+
+
+def usage():
+    print "Usage:"
+    print sys.argv[0], " <start|stop>"
+    sys.exit( -1 )
+
+def isRunning( server ):
+    print "isRunningCalled"
+    status = nmServerStatus( server )
+    print " Status:", status
+    if "RUNNING" == status:
+        return True
+    else:
+        return False
+
+def startServer( server ):
+    print "Server ", server, ":"
+    if "RUNNING" != nmServerStatus( server ):
+        print "  Starting..."
+        nmStart( server )
+    else:
+        print "  Already running"
+
+def stopServer( server ):
+    print "Server ", server, ":"
+    if "RUNNING" == nmServerStatus( server ):
+        print "  Stopping..."
+        nmKill( server )
+    else:
+        print "  Not running"
+
+if len( sys.argv ) != 2:
+    usage()
+
+#nmConnect('weblogic', 'Welcome01', 'lcmdemo.oracleateam.com', '5556', 'IAMDomain','/home/oracle/Oracle/Middleware/user_projects/domains/IAMDomain/','ssl') 
+nmConnect(username, password, hostname, '5556', 'IAMDomain','/home/oracle/Oracle/Middleware/user_projects/domains/IAMDomain/','ssl') 
+
+if sys.argv[1] == "start":
+    for server in servers:
+        startServer( server )
+elif sys.argv[1] == "stop":
+    for server in servers:
+        stopServer( server )
+else:
+    usage()
