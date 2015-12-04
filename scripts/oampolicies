@@ -1,0 +1,71 @@
+#!/home/oracle/Oracle/Middleware/Oracle_IAM1/common/bin/wlst.sh
+#!/usr/bin/python
+
+import os
+import sys
+
+username = 'weblogic'
+password = 'Welcome01'
+url = 't3://localhost:7001'
+
+
+# you shouldn't need to edit past here
+
+
+def usage():
+    print "Usage:"
+    print sys.argv[0], " <import|export> <directory>"
+    sys.exit( -1 )
+
+def checkIsDir( directory ):
+    if os.path.isdir( directory ):
+        return
+    else:
+        print "ERROR!"
+        print "Directory '"+directory+"' is not a directory!"
+        sys.exit( -1 )
+
+
+def exportPolicies( directory ):
+    checkIsDir( directory )
+    connect(username,password,url)
+    currFile = os.path.abspath( directory ) + '/oam_partners.xml'
+    if os.path.isfile( currFile ):
+        print "Overwriting",currFile
+        os.remove(currFile)
+    exportPartners(pathTempOAMPartnerFile=currFile)
+    currFile = os.path.abspath( directory ) + '/oam_policies.xml'
+    if os.path.isfile( currFile ):
+        print "Overwriting",currFile
+        os.remove(currFile)
+    exportPolicy(pathTempOAMPolicyFile=currFile)
+
+def importPolicies( directory ):
+    checkIsDir( directory )
+    connect(username,password,url)
+    currFile = os.path.abspath( directory ) + '/oam_partners.xml'
+    if os.path.isfile( currFile ):
+        print "Importing partners from",currFile
+        importPartners(pathTempOAMPartnerFile=currFile)
+    else:
+        print "Partners file '"+currFile+"' does not exist. Skipping import."
+    currFile = os.path.abspath( directory ) + '/oam_policies.xml'
+    if os.path.isfile( currFile ):
+        print "Importing policies from",currFile
+        importPolicyDelta(pathTempOAMPolicyFile=currFile)
+    else:
+        print "Policy file '"+currFile+"' does not exist. Skipping import."
+
+
+
+if len(sys.argv) < 3:
+    usage()
+elif sys.argv[1] == "export":
+    print "exporting policies TO directory",sys.argv[2]
+    exportPolicies(sys.argv[2]);
+elif sys.argv[1] == "import":
+    print "importing policies FROM directory",sys.argv[2]
+    importPolicies(sys.argv[2]);
+else:
+    print "OK"
+
